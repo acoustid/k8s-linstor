@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "linstor.fullname" . }}-controller
+  labels:
+    {{- include "linstor.labels" . | nindent 4 }}
+    app.kubernetes.io/component: linstor-controller
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3370
+      name: rest-api
+      targetPort: 3370
+  selector:
+    {{- include "linstor.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: linstor-controller
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "linstor.fullname" . }}-controller
+  labels:
+    {{- include "linstor.labels" . | nindent 4 }}
+    app.kubernetes.io/component: linstor-controller
+spec:
+  selector:
+    matchLabels:
+      {{- include "linstor.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: linstor-controller
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include "linstor.labels" . | nindent 8 }}
+        app.kubernetes.io/component: linstor-controller
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 0
+      containers:
+        - name: controller
+          image: quay.io/acoustid/linstor-controller:master
+          imagePullPolicy: Always
+          command: ["/bin/bash", "-ec"]
+          args:
+            - |
+              cat > /etc/linstor/linstor.toml <<EOF
+              [db]
+              user = "linstor"
+              password = "linstor"
+              connection_url = "${ETCD_CLUSTER}"
+              EOF
+              exec /entry.sh
+          env:
+            - name: ETCD_CLUSTER
+              value: etcd://piraeus-etcd-cluster-client:2379
+          volumeMounts:
+            - name: localtime
+              mountPath: /etc/localtime
+          ports:
+            - name: rest-api
+              containerPort: 3370
+            - name: plain
+              containerPort: 3376
+            - name: ssl
+              containerPort: 3377
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            successThreshold: 3
+            failureThreshold: 3
+            httpGet:
+              port: 3370
+            initialDelaySeconds: 5
+            periodSeconds: 1
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /etc/localtime

@@ -1,0 +1,140 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "linstor.fullname" . }}-node
+  labels:
+    {{- include "linstor.labels" . | nindent 4 }}
+    app.kubernetes.io/component: linstor-node
+spec:
+  minReadySeconds: 0
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      {{- include "linstor.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: linstor-node
+  template:
+    metadata:
+      labels:
+        {{- include "linstor.labels" . | nindent 8 }}
+        app.kubernetes.io/component: linstor-node
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 0
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+      - name: init
+        image: quay.io/piraeusdatastore/piraeus-init:v0.2
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: THIS_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: THIS_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: THIS_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: LS_CONTROLLERS
+          value: piraeus-controller:3370
+        - name: TIMEOUT
+          value: "3600"
+        - name: REGISTRY
+          value: quay.io/piraeusdatastore
+        - name: IMAGE_PULL_POLICY
+          value: Always
+        args:
+          - startSatellite
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+        - name: init
+          mountPath: /init
+        - name: dockersock
+          mountPath: /var/run/docker.sock
+        - name: usr-src
+          mountPath: /usr/src
+        - name: lib-modules
+          mountPath: /lib/modules
+      containers:
+      - name: node
+        image: quay.io/piraeusdatastore/piraeus-server:v1.3.1
+        imagePullPolicy: Always
+        securityContext:
+          privileged: true
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+        env:
+        - name: THIS_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: LS_CONTROLLERS
+          value: piraeus-controller:3370
+        args:
+        - startSatellite
+        readinessProbe:
+          successThreshold: 3
+          failureThreshold: 3
+          tcpSocket:
+            port: 3366
+          initialDelaySeconds: 5
+          periodSeconds: 1
+        volumeMounts:
+        - name: localtime
+          mountPath: /etc/localtime
+        - name: init
+          mountPath: /init
+        - name: log
+          mountPath: /var/log/linstor-satellite
+        - name: var-local-piraeus
+          mountPath: /var/local/piraeus
+        - name: dev
+          mountPath: /dev
+        - name: lib-modules
+          mountPath: /lib/modules
+      volumes:
+        - name: localtime
+          hostPath:
+            path: /etc/localtime
+        - name: init
+          emptyDir: {}
+        - name: dockersock
+          hostPath:
+            path: /var/run/docker.sock
+            type: Socket
+        - name: log
+          hostPath:
+            path: /var/log/piraeus/linstor-satellite
+        - name: var-local-piraeus
+          hostPath:
+            path: /var/local/piraeus
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: usr-sbin
+          hostPath:
+            path: /usr/sbin
+        - name: usr-src
+          hostPath:
+            path: /usr/src
+        - name: lib-modules
+          hostPath:
+            path: /lib/modules
+      affinity:
+        {{- toYaml .Values.node.affinity | nindent 8 }}

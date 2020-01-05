@@ -86,3 +86,5 @@ spec:
         - name: device-dir
           hostPath:
             path: /dev
+      affinity:
+        {{- toYaml .Values.node.affinity | nindent 8 }}
