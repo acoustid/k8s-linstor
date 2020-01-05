@@ -35,13 +35,24 @@ jobs:
           cd images/drbd/
           docker build -f Dockerfile.centos8 -t quay.io/acoustid/drbd:centos8 .
 
-  docker-linstor:
-    name: Build image linstor
+  docker-linstor-controller:
+    name: Build image linstor-controller
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
         uses: actions/checkout@v1
       - name: Build image
         run: |
-          cd images/linstor/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor .
+          cd images/linstor-controller/
+          docker build -f Dockerfile -t quay.io/acoustid/linstor-controller .
+
+  docker-linstor-satellite:
+    name: Build image linstor-satellite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Build image
+        run: |
+          cd images/linstor-satellite/
+          docker build -f Dockerfile -t quay.io/acoustid/linstor-satellite .
