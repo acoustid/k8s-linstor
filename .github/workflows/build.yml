@@ -2,7 +2,7 @@ name: Build
 on: [push]
 jobs:
 
-  docker-drdb:
+  docker-drbd:
     name: Build drbd images
     runs-on: ubuntu-latest
     strategy:
@@ -17,7 +17,9 @@ jobs:
       - name: Set GITHUB_REF_SLUG
         run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
       - name: Build image
-        run: docker build -f Dockerfile.bionic -t docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} image/drbd.
+        run: |
+          cd images/drbd/
+          docker build -f Dockerfile.bionic -t docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
@@ -40,7 +42,8 @@ jobs:
         run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
       - name: Build image
         run: |
-          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG images/linstor-${{ matrix.component }}
+          cd images/linstor-${{ matrix.component }}/
+          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
