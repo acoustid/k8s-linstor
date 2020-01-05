@@ -1,11 +1,10 @@
-FROM ubuntu:bionic
+FROM centos:7
 
 ARG DRBD_VERSION=9.0.21-1
 
-RUN { echo 'APT::Install-Recommends "false";' ; echo 'APT::Install-Suggests "false";' ; } > /etc/apt/apt.conf.d/99_linstor
-RUN apt-get update && \
-    apt-get install -y kmod gnupg wget make gcc patch curl && \
-    apt-get clean
+RUN yum update-minimal -y --security --sec-severity=Important --sec-severity=Critical && \
+    yum install -y wget gcc make patch curl kmod yum-utils && \
+    yum clean all -y
 
 RUN wget https://www.linbit.com/downloads/drbd/9.0/drbd-${DRBD_VERSION}.tar.gz -O /drbd.tar.gz && \
     wget https://raw.githubusercontent.com/LINBIT/drbd/drbd-${DRBD_VERSION}/docker/entry.sh /entry.sh && \

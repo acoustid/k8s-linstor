@@ -2,15 +2,46 @@ name: Build
 on: [push]
 jobs:
 
-  docker:
-    name: Build drbd image
+  docker-drdb-bionic:
+    name: Build image drbd:bionic
     runs-on: ubuntu-latest
     steps:
-
       - name: Check out code
         uses: actions/checkout@v1
-
-      - name: Build drbd image
+      - name: Build image
         run: |
           cd images/drbd/
           docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:bionic .
+
+  docker-drdb-centos7:
+    name: Build image drbd:centos7
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Build image
+        run: |
+          cd images/drbd/
+          docker build -f Dockerfile.centos7 -t quay.io/acoustid/drbd:centos7 .
+
+  docker-drdb-centos8:
+    name: Build image drbd:centos8
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Build image
+        run: |
+          cd images/drbd/
+          docker build -f Dockerfile.centos8 -t quay.io/acoustid/drbd:centos8 .
+
+  docker-linstor:
+    name: Build image linstor
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v1
+      - name: Build image
+        run: |
+          cd images/linstor/
+          docker build -f Dockerfile -t quay.io/acoustid/linstor .
