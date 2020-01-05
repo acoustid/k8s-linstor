@@ -1,0 +1,16 @@
+name: Build
+on: [push]
+jobs:
+
+  docker:
+    name: Build drbd image
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out code
+        uses: actions/checkout@v1
+
+      - name: Build drbd image
+        run: |
+          cd images/drbd/
+          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:bionic .
