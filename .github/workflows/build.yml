@@ -66,4 +66,8 @@ jobs:
       - name: Build image
         run: |
           cd images/linstor-satellite/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-satellite .
+          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-satellite:$GITHUB_SHA .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-satellite:$GITHUB_SHA
