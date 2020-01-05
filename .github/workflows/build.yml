@@ -19,12 +19,11 @@ jobs:
       - name: Build image
         run: |
           cd images/drbd/
-          docker build -f Dockerfile.bionic -t docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
+          docker build -f Dockerfile.bionic -t docker.pkg.github.com/$GITHUB_REPOSITORY/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
-        if: github.repository == 'acoustid/k8s-linstor'
+          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
 
   docker-linstor:
     name: Build linstor images
@@ -43,9 +42,8 @@ jobs:
       - name: Build image
         run: |
           cd images/linstor-${{ matrix.component }}/
-          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
+          docker build -f Dockerfile -t docker.pkg.github.com/$GITHUB_REPOSITORY/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
-        if: github.repository == 'acoustid/k8s-linstor'
+          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
