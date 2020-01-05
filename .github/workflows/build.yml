@@ -19,11 +19,11 @@ jobs:
       - name: Build image
         run: |
           cd images/drbd/
-          docker build -f Dockerfile.bionic -t docker.pkg.github.com/$GITHUB_REPOSITORY/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
+          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
       - name: Push image
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
+          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+          docker push quay.io/acoustid/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
 
   docker-linstor:
     name: Build linstor images
@@ -42,8 +42,8 @@ jobs:
       - name: Build image
         run: |
           cd images/linstor-${{ matrix.component }}/
-          docker build -f Dockerfile -t docker.pkg.github.com/$GITHUB_REPOSITORY/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
+          docker build -f Dockerfile -t quay.io/acoustid/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
       - name: Push image
         run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/$GITHUB_REPOSITORY/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
+          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
+          docker push quay.io/acoustid/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
