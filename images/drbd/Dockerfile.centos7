@@ -7,7 +7,7 @@ RUN yum update-minimal -y --security --sec-severity=Important --sec-severity=Cri
     yum clean all -y
 
 RUN wget https://www.linbit.com/downloads/drbd/9.0/drbd-${DRBD_VERSION}.tar.gz -O /drbd.tar.gz && \
-    wget https://raw.githubusercontent.com/LINBIT/drbd/drbd-${DRBD_VERSION}/docker/entry.sh /entry.sh && \
+    wget https://raw.githubusercontent.com/LINBIT/drbd/drbd-${DRBD_VERSION}/docker/entry.sh -O /entry.sh && \
     chmod +x /entry.sh
 
 ENTRYPOINT ["/entry.sh"]
