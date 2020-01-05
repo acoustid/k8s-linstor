@@ -2,38 +2,16 @@ name: Build
 on: [push]
 jobs:
 
-  docker-drbd:
-    name: Build drbd images
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        distro:
-          - bionic
-          - centos7
-          - centos8
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Set GITHUB_REF_SLUG
-        run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
-      - name: Build image
-        run: |
-          cd images/drbd/
-          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} .
-      - name: Push image
-        run: |
-          echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
-          docker push quay.io/acoustid/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
-
-  docker-linstor:
-    name: Build linstor images
+  docker-images:
+    name: Build images
     runs-on: ubuntu-latest
     strategy:
       matrix:
         component:
-          - client
-          - controller
-          - satellite
+          - drbd
+          - linstor-client
+          - linstor-controller
+          - linstor-satellite
     steps:
       - name: Check out code
         uses: actions/checkout@v1
@@ -41,9 +19,9 @@ jobs:
         run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
       - name: Build image
         run: |
-          cd images/linstor-${{ matrix.component }}/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG .
+          cd images/${{ matrix.component }}/
+          docker build -t quay.io/acoustid/${{ matrix.component }}:$GITHUB_REF_SLUG .
       - name: Push image
         run: |
           echo ${{ secrets.QUAY_PASSWORD }} | docker login quay.io -u ${{ secrets.QUAY_USERNAME }} --password-stdin
-          docker push quay.io/acoustid/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
+          docker push quay.io/acoustid/${{ matrix.component }}:$GITHUB_REF_SLUG
