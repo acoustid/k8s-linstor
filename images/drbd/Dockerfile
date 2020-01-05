@@ -2,9 +2,8 @@ FROM ubuntu:bionic
 
 ARG DRBD_VERSION=9.0.21-1
 
-RUN { echo 'APT::Install-Recommends "false";' ; echo 'APT::Install-Suggests "false";' ; } > /etc/apt/apt.conf.d/99_linstor
 RUN apt-get update && \
-    apt-get install -y kmod gnupg wget make gcc cpp patch curl coccinelle ca-certificates && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y kmod gnupg wget make gcc cpp patch curl coccinelle ca-certificates && \
     apt-get clean
 
 RUN wget https://www.linbit.com/downloads/drbd/9.0/drbd-${DRBD_VERSION}.tar.gz -O /drbd.tar.gz && \
