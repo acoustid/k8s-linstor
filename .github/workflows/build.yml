@@ -2,92 +2,47 @@ name: Build
 on: [push]
 jobs:
 
-  docker-drdb-bionic:
-    name: Build image drbd:bionic
+  docker-drdb:
+    name: Build drbd images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - bionic
+          - centos7
+          - centos8
     steps:
       - name: Check out code
         uses: actions/checkout@v1
+      - name: Set GITHUB_REF_SLUG
+        run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
       - name: Build image
-        run: |
-          cd images/drbd/
-          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:$GITHUB_SHA-bionic .
+        run: docker build -f Dockerfile.bionic -t docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }} image/drbd.
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-bionic
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/drbd:$GITHUB_REF_SLUG-${{ matrix.distro }}
+        if: github.repository == 'acoustid/k8s-linstor'
 
-  docker-drdb-centos7:
-    name: Build image drbd:centos7
+  docker-linstor:
+    name: Build linstor images
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        component:
+          - client
+          - controller
+          - satellite
     steps:
       - name: Check out code
         uses: actions/checkout@v1
+      - name: Set GITHUB_REF_SLUG
+        run: echo ::set-env name=GITHUB_REF_SLUG::$(echo $GITHUB_REF | cut -d'/' -f3)
       - name: Build image
         run: |
-          cd images/drbd/
-          docker build -f Dockerfile.centos7 -t quay.io/acoustid/drbd:$GITHUB_SHA-centos7 .
+          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG images/linstor-${{ matrix.component }}
       - name: Push image
         run: |
           echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-centos7
-
-  docker-drdb-centos8:
-    name: Build image drbd:centos8
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Build image
-        run: |
-          cd images/drbd/
-          docker build -f Dockerfile.centos8 -t quay.io/acoustid/drbd:$GITHUB_SHA-centos8 .
-      - name: Push image
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-centos8
-
-  docker-linstor-client:
-    name: Build image linstor-client
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Build image
-        run: |
-          cd images/linstor-client/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-client:$GITHUB_SHA .
-      - name: Push image
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-client:$GITHUB_SHA
-
-  docker-linstor-controller:
-    name: Build image linstor-controller
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Build image
-        run: |
-          cd images/linstor-controller/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-controller:$GITHUB_SHA .
-      - name: Push image
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-controller:$GITHUB_SHA
-
-  docker-linstor-satellite:
-    name: Build image linstor-satellite
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v1
-      - name: Build image
-        run: |
-          cd images/linstor-satellite/
-          docker build -f Dockerfile -t docker.pkg.github.com/acoustid/k8s-linstor/linstor-satellite:$GITHUB_SHA .
-      - name: Push image
-        run: |
-          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
-          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-satellite:$GITHUB_SHA
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-${{ matrix.component }}:$GITHUB_REF_SLUG
+        if: github.repository == 'acoustid/k8s-linstor'
