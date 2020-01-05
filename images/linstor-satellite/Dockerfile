@@ -15,4 +15,4 @@ RUN sed -i 's/udev_rules.*=.*/udev_rules=0/ ; s/udev_sync.*=.*/udev_sync=0/ ; s/
 
 COPY entry.sh /entry.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entry.sh"]
