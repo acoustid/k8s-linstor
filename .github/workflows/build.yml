@@ -11,7 +11,11 @@ jobs:
       - name: Build image
         run: |
           cd images/drbd/
-          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:bionic .
+          docker build -f Dockerfile.bionic -t quay.io/acoustid/drbd:$GITHUB_SHA-bionic .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-bionic
 
   docker-drdb-centos7:
     name: Build image drbd:centos7
@@ -22,7 +26,11 @@ jobs:
       - name: Build image
         run: |
           cd images/drbd/
-          docker build -f Dockerfile.centos7 -t quay.io/acoustid/drbd:centos7 .
+          docker build -f Dockerfile.centos7 -t quay.io/acoustid/drbd:$GITHUB_SHA-centos7 .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-centos7
 
   docker-drdb-centos8:
     name: Build image drbd:centos8
@@ -33,7 +41,11 @@ jobs:
       - name: Build image
         run: |
           cd images/drbd/
-          docker build -f Dockerfile.centos8 -t quay.io/acoustid/drbd:centos8 .
+          docker build -f Dockerfile.centos8 -t quay.io/acoustid/drbd:$GITHUB_SHA-centos8 .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/drdb:$GITHUB_SHA-centos8
 
   docker-linstor-client:
     name: Build image linstor-client
@@ -44,7 +56,11 @@ jobs:
       - name: Build image
         run: |
           cd images/linstor-client/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-client .
+          docker build -f Dockerfile -t quay.io/acoustid/linstor-client:$GITHUB_SHA .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-client:$GITHUB_SHA
 
   docker-linstor-controller:
     name: Build image linstor-controller
@@ -55,7 +71,11 @@ jobs:
       - name: Build image
         run: |
           cd images/linstor-controller/
-          docker build -f Dockerfile -t quay.io/acoustid/linstor-controller .
+          docker build -f Dockerfile -t quay.io/acoustid/linstor-controller:$GITHUB_SHA .
+      - name: Push image
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u $GITHUB_ACTOR --password-stdin
+          docker push docker.pkg.github.com/acoustid/k8s-linstor/linstor-controller:$GITHUB_SHA
 
   docker-linstor-satellite:
     name: Build image linstor-satellite
