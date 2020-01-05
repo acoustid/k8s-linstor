@@ -11,7 +11,8 @@ RUN apt-get update && \
         dnsutils netcat sysstat udev lvm2 && \
     apt-get autoremove -y gnupg2 && \
     apt-get clean && \
-    mkdir /etc/linstor /var/log/linstor-satellite
+    mkdir /var/log/linstor-satellite && \
+    ln -s /dev/stdout /var/log/linstor-satellite/linstor-Satellite.log
 
 RUN sed -i 's/udev_rules.*=.*/udev_rules=0/ ; s/udev_sync.*=.*/udev_sync=0/ ; s/obtain_device_list_from_udev.*=.*/obtain_device_list_from_udev=0/' /etc/lvm/lvm.conf
 

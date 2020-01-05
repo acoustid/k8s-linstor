@@ -9,8 +9,9 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y linstor-client linstor-controller && \
     apt-get autoremove -y gnupg2 && \
     apt-get clean && \
-    mkdir /etc/linstor /var/log/linstor-controller && \
-    ln -s /dev/stdout /var/log/linstor-controller/rest-access.log
+    mkdir /var/log/linstor-controller && \
+    ln -s /dev/stdout /var/log/linstor-controller/rest-access.log && \
+    ln -s /dev/stdout /var/log/linstor-controller/linstor-Controller.log
 
 COPY entry.sh /entry.sh
 
