@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y linstor-client && \
     apt-get autoremove -y gnupg2 && \
-    apt-get clean
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY entry.sh /entry.sh
 

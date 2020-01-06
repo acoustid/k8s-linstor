@@ -8,7 +8,7 @@ RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y default-jre-headless && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y linstor-client linstor-controller && \
     apt-get autoremove -y gnupg2 && \
-    apt-get clean && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
     mkdir /var/log/linstor-controller && \
     ln -s /dev/stdout /var/log/linstor-controller/rest-access.log && \
     ln -s /dev/stdout /var/log/linstor-controller/linstor-Controller.log

@@ -10,7 +10,7 @@ RUN apt-get update && \
         wget xfsprogs net-tools iputils-ping iproute2 \
         dnsutils netcat sysstat udev lvm2 && \
     apt-get autoremove -y gnupg2 && \
-    apt-get clean && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* && \
     mkdir /var/log/linstor-satellite && \
     ln -s /dev/stdout /var/log/linstor-satellite/linstor-Satellite.log
 

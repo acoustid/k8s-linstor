@@ -12,6 +12,7 @@ jobs:
           - linstor-client
           - linstor-controller
           - linstor-satellite
+          - linstor-csi
     steps:
       - name: Check out code
         uses: actions/checkout@v1
