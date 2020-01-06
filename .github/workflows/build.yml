@@ -1,8 +1,11 @@
-name: Build
-on: [push]
+name: Build images
+on:
+  push:
+    paths:
+      - images/**
 jobs:
 
-  docker-images:
+  build-images:
     name: Build images
     runs-on: ubuntu-latest
     strategy:
