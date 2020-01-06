@@ -70,9 +70,9 @@ spec:
         - name: lib-modules
           mountPath: /lib/modules
       containers:
-      - name: node
-        image: quay.io/piraeusdatastore/piraeus-server:v1.3.1
-        imagePullPolicy: Always
+      - name: satellite
+        image: {{ .Values.node.satellite.image.repository }}:{{ .Values.node.satellite.image.tag }}
+        imagePullPolicy: {{ .Values.node.satellite.image.pullPolicy }}
         securityContext:
           privileged: true
         resources:
@@ -86,8 +86,6 @@ spec:
               fieldPath: spec.nodeName
         - name: LS_CONTROLLERS
           value: piraeus-controller:3370
-        args:
-        - startSatellite
         readinessProbe:
           successThreshold: 3
           failureThreshold: 3
@@ -100,8 +98,6 @@ spec:
           mountPath: /etc/localtime
         - name: init
           mountPath: /init
-        - name: log
-          mountPath: /var/log/linstor-satellite
         - name: var-local-piraeus
           mountPath: /var/local/piraeus
         - name: dev
@@ -118,9 +114,6 @@ spec:
           hostPath:
             path: /var/run/docker.sock
             type: Socket
-        - name: log
-          hostPath:
-            path: /var/log/piraeus/linstor-satellite
         - name: var-local-piraeus
           hostPath:
             path: /var/local/piraeus

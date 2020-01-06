@@ -39,8 +39,8 @@ spec:
       terminationGracePeriodSeconds: 0
       containers:
         - name: controller
-          image: quay.io/acoustid/linstor-controller:master
-          imagePullPolicy: Always
+          image: {{ .Values.controller.image.repository }}:{{ .Values.controller.image.tag }}
+          imagePullPolicy: {{ .Values.controller.image.pullPolicy }}
           command: ["/bin/bash", "-ec"]
           args:
             - |
